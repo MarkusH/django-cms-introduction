@@ -1,0 +1,339 @@
+$ mkproject -p /usr/bin/python2.7 djangocms-talk
+$ pip install "Django==1.6.2" South psycopg2 Pillow
+$ pip install -e "git+https://github.com/divio/django-cms.git@fdbccf10863924ad426021cd48b4bd4588ee5d9b#egg=django-cms"
+$ pip install djangocms-text-ckeditor djangocms-admin-style djangocms-link 
+
+$ django-admin.py startproject djangocms_talk .
+
+$ sudo -u postgres createuser -P -S -D -R djangocms_talk
+Enter password for new role:
+Enter it again:
+$ sudo -u postgres createdb  djangocms_talk
+
+$ vim djangocms_talk/settings.py
+
+### define setting for DATABASE and add south
+
+$ python manage.py syncdb
+Syncing...
+Creating tables ...
+Creating table django_admin_log
+Creating table auth_permission
+Creating table auth_group_permissions
+Creating table auth_group
+Creating table auth_user_groups
+Creating table auth_user_user_permissions
+Creating table auth_user
+Creating table django_content_type
+Creating table django_session
+Creating table south_migrationhistory
+
+You just installed Django's auth system, which means you don't have any superusers defined.
+Would you like to create one now? (yes/no): yes
+Username (leave blank to use 'markus'):
+Email address:
+Password:
+Password (again):
+Superuser created successfully.
+Installing custom SQL ...
+Installing indexes ...
+Installed 0 object(s) from 0 fixture(s)
+
+Synced:
+ > django.contrib.admin
+ > django.contrib.auth
+ > django.contrib.contenttypes
+ > django.contrib.sessions
+ > django.contrib.messages
+ > django.contrib.staticfiles
+ > south
+
+Not synced (use migrations):
+ -
+(use ./manage.py migrate to migrate these)
+
+
+### runserver shows successful Django installation
+
+
+$ vim djangocms_talk/settings.py
+
+### add PROJECT_DIR
+PROJECT_DIR = os.path.join(BASE_DIR, 'djangocms_talk')
+
+
+### update INSTALLED_APPS:
+INSTALLED_APPS = (
+    'djangocms_admin_style',  # must be before 'd.c.admin'!
+
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'south',
+
+    'djangocms_text_ckeditor',  # must be before 'cms'!
+    'djangocms_link',
+
+    'cms',
+    'mptt',
+    'menus',
+    'sekizai',
+)
+
+
+### add SITE_ID:
+SITE_ID = 1
+
+
+### update MIDDLEWARE_CLASSES
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.user.CurrentUserMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
+)
+
+
+### update TEMPLATE_CONTEXT_PROCESSORS
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.request',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+    'cms.context_processors.cms_settings',
+    'sekizai.context_processors.sekizai',
+)
+
+
+### add STATICFILES_DIRS:
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_DIR, "static"),
+)
+
+
+### add MEDIA_ROOT:
+MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
+
+
+### add MEDIA_URL:
+MEDIA_URL = '/media/'
+
+
+### add TEMPLATE_DIRS:
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_PATH, 'templates'),
+)
+
+
+### add CMS_TEMPLATES:
+CMS_TEMPLATES = (
+    ('start.html', 'Start page'),
+    ('content.html', 'Content page'),
+)
+
+### add LANGUAGES:
+LANGUAGES = (
+    ('en', 'English'),
+)
+
+
+### update LANGUAGE_CODE
+LANGUAGE_CODE = 'en'
+
+
+### update TIME_ZONE
+TIME_ZONE = 'Europe/Berlin'
+
+
+$ python manage.py syncdb
+Syncing...
+Creating tables ...
+Creating table django_site
+Installing custom SQL ...
+Installing indexes ...
+Installed 0 object(s) from 0 fixture(s)
+
+Synced:
+ > django.contrib.admin
+ > django.contrib.auth
+ > django.contrib.contenttypes
+ > django.contrib.sessions
+ > django.contrib.sites
+ > django.contrib.messages
+ > django.contrib.staticfiles
+ > south
+ > mptt
+ > sekizai
+ > djangocms_admin_style
+
+Not synced (use migrations):
+ - djangocms_text_ckeditor
+ - cms
+ - menus
+(use ./manage.py migrate to migrate these)
+
+
+$ python manage.py migrate
+Running migrations for djangocms_text_ckeditor:
+ - Migrating forwards to 0002_rename_plugin.
+ > cms:0001_initial
+ > djangocms_text_ckeditor:0001_initial
+ > djangocms_text_ckeditor:0002_rename_plugin
+ - Loading initial data for djangocms_text_ckeditor.
+Installed 0 object(s) from 0 fixture(s)
+Running migrations for djangocms_link:
+ - Migrating forwards to 0001_initial.
+ > djangocms_link:0001_initial
+ - Loading initial data for djangocms_link.
+Installed 0 object(s) from 0 fixture(s)
+Running migrations for cms:
+ - Migrating forwards to 0062_auto__add_field_staticplaceholder_site__del_unique_staticplaceholder_c.
+ > cms:0002_auto_start
+ > cms:0003_remove_placeholder
+ > cms:0004_textobjects
+ > cms:0005_mptt_added_to_plugins
+ > cms:0006_apphook
+ > cms:0007_apphook_longer
+ > cms:0008_redirects
+ > cms:0009_added_meta_fields
+ > cms:0010_5char_language
+ > cms:0011_title_overwrites
+ > cms:0012_publisher
+ > cms:0013_site_copy
+ > cms:0014_sites_removed
+ > cms:0015_modified_by_added
+ > cms:0016_author_copy
+ > cms:0017_author_removed
+ > cms:0018_site_permissions
+ > cms:0019_public_table_renames
+ > cms:0020_advanced_permissions
+ > cms:0021_publisher2
+ > cms:0022_login_required_added
+ > cms:0023_plugin_table_naming_function_changed
+ > cms:0024_added_placeholder_model
+ > cms:0025_placeholder_migration
+ > cms:0026_finish_placeholder_migration
+ > cms:0027_added_width_to_placeholder
+ > cms:0028_limit_visibility_in_menu_step1of3
+ > cms:0029_limit_visibility_in_menu_step2of3_data
+ > cms:0030_limit_visibility_in_menu_step3of3
+ > cms:0031_improved_language_code_support
+ > cms:0032_auto__del_field_cmsplugin_publisher_public__del_field_cmsplugin_publis
+ > cms:0033_auto__del_field_title_publisher_is_draft__del_field_title_publisher_st
+ > cms:0034_auto__chg_field_title_language__chg_field_cmsplugin_language__add_fiel
+ > cms:0035_auto__add_field_globalpagepermission_can_view__add_field_pagepermissio
+ > cms:0036_auto__add_field_cmsplugin_changed_date
+ > cms:0037_auto__del_pagemoderator__del_field_globalpagepermission_can_moderate__
+ > cms:0038_publish_page_permission
+ > cms:0039_auto__del_field_page_moderator_state
+ > cms:0040_auto__del_field_title_meta_keywords__chg_field_title_meta_description
+ > cms:0041_auto__add_usersettings
+ > cms:0042_auto__del_field_title_meta_keywords__chg_field_title_meta_description_
+ > cms:0043_auto__add_field_usersettings_clipboard
+ > cms:0044_killsettings
+ > cms:0045_auto__add_field_page_application_urls
+ > cms:0046_move_apphooks
+ > cms:0047_auto__del_field_title_application_urls
+ > cms:0048_auto__add_field_page_application_namespace__add_unique_page_publisher_
+ > cms:0049_auto__add_field_page_is_home
+ > cms:0050_save_home
+ > cms:0051_auto__add_placeholderreference
+ > cms:0051_fix_content_type
+ > cms:0052_auto__add_placeholderreference__add_staticplaceholder__add_field_page_
+ > cms:0053_auto__add_field_title_published__add_field_title_publisher_is_draft__a
+ > cms:0054_new_publisher_data
+ > cms:0055_auto__del_field_page_publisher_state__del_field_page_published
+ > cms:0056_auto__del_field_page_published_languages
+ > cms:0057_fix_values
+ > cms:0058_placeholderref_table_rename
+ > cms:0059_auto__del_pagemoderatorstate
+ > cms:0060_auto__add_field_page_xframe_options
+ > cms:0061_revers_id_unique
+ > cms:0062_auto__add_field_staticplaceholder_site__del_unique_staticplaceholder_c
+ - Loading initial data for cms.
+Installed 0 object(s) from 0 fixture(s)
+Running migrations for menus:
+ - Migrating forwards to 0001_initial.
+ > menus:0001_initial
+ - Loading initial data for menus.
+Installed 0 object(s) from 0 fixture(s)
+
+
+### update urls.py
+
+
+### runserver shows cms successful installation
+
+
+$ mkdir -p djangocms_talk/{static,media,templates}
+$ touch djangocms_talk/templates/template_{1,2}.html
+$ touch djangocms_talk/templates/base.html
+
+$ python manage.py cms check
+********************************
+Checking django CMS installation
+********************************
+
+Sekizai
+=======
+
+  - Sekizai is installed [OK]
+  - Sekizai template context processor is installed [OK]
+  - Sekizai namespaces 'js' and 'css' found in 'start.html' [OK]
+  - Sekizai namespaces 'js' and 'css' found in 'content.html' [OK]
+
+Sekizai configuration okay [OK]
+
+Internationalization
+====================
+
+  - New style CMS_LANGUAGES [OK]
+
+Deprecated settings
+===================
+
+  - No deprecated settings found [SKIP]
+
+Plugin instances
+================
+
+  - Plugin instances of 0 types found in the database [OK]
+
+The plugins in your database are in good order [OK]
+
+Presence of "copy_relations"
+============================
+
+
+All plugins have "copy_relations" method if needed. [OK]
+
+Usage of deprecated placeholder_tags
+====================================
+
+
+
+OVERALL RESULTS
+===============
+
+1 checks skipped!
+9 checks successful!
+
+Installation okay
+
+
+
