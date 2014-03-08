@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title></title>
+    <title>{{ request.current_page.get_page_title }}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
@@ -30,7 +30,7 @@
     <![endif]-->
     {% cms_toolbar %}
 
-    {% show_menu 0 3 3 1000 "menu/menu.html" %}
+    {% show_menu 0 100 100 1000 "menu/menu.html" %}
 
     {% block content %}{% endblock %}
 
